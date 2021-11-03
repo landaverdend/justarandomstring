@@ -1,0 +1,21 @@
+# ========================================================================
+# Standard Spring Boot properties.
+# Full reference is available at:
+# https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html
+# ========================================================================
+
+
+spring:
+  application:
+    name: weather-sensor-service
+
+server:
+  port: 8081
+
+mysql:
+  database: sensors
+  hostName: localhost
+  portNumber: 3306
+  driver: mysql
+  username: appuser # realistically this would be saved in a vault or somewhere safe.
+  password: appuser
