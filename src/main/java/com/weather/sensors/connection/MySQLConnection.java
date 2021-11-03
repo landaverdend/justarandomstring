@@ -34,12 +34,6 @@ public class MySQLConnection extends AbstractR2dbcConfiguration {
     @Value("${mysql.password}")
     private String password;
 
-    @Primary
-    @Bean
-    public R2dbcEntityTemplate getSensorTemplate(ConnectionFactory connectionFactory) {
-        return new R2dbcEntityTemplate(connectionFactory);
-    }
-
     @Override
     @Bean
     public ConnectionFactory connectionFactory() {
