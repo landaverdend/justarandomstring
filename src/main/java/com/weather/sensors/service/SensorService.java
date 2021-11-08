@@ -64,12 +64,11 @@ public class SensorService {
         // If no start/end date is specified, then just return sensor data for the past thirty days for all sensor ID's in list.
         if (sensorRequest.getStartDate() == null && sensorRequest.getEndDate() == null) {
             String lastThirtyDays = formatter.format(LocalDateTime.now().minusDays(30));
-            return getAverages(sensorRequest.getMetrics(), sensorRequest.getSensorIdList(), lastThirtyDays, formatter.format(LocalDateTime.now())).subscribeOn(Schedulers.boundedElastic());
+            return getAverages(sensorRequest.getMetrics(), sensorRequest.getSensorIdList(), lastThirtyDays, formatter.format(LocalDateTime.now()));
         } else { // startdate and enddate are defined.
             return getAverages(sensorRequest.getMetrics(), sensorRequest.getSensorIdList(),
                     formatter.format(sensorRequest.getStartDate()),
-                    formatter.format(sensorRequest.getEndDate()))
-                    .subscribeOn(Schedulers.boundedElastic());
+                    formatter.format(sensorRequest.getEndDate()));
         }
     }
 
@@ -91,7 +90,7 @@ public class SensorService {
             }
         }
 
-        return Flux.mergeSequential(streams);
+        return Flux.mergeSequential(streams).subscribeOn(Schedulers.boundedElastic());
     }
 
     public boolean validMetricsList(List<String> metrics) {
