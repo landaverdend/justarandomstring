@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -42,7 +44,7 @@ public class SensorService {
      * @return
      */
     public Mono<Sensor> upsertSensor(Sensor sensor) {
-        return sensorRepository.save(sensor);
+        return sensorRepository.save(sensor).subscribeOn(Schedulers.boundedElastic());
     }
 
     /**
@@ -51,7 +53,7 @@ public class SensorService {
      * @return
      */
     public Mono<SensorRecord> upsertSensorRecord(SensorRecord record) {
-        return sensorRecordRepository.save(record);
+        return sensorRecordRepository.save(record).subscribeOn(Schedulers.boundedElastic());
     }
 
     public Flux<AvgDto> getSensorData(SensorRequest sensorRequest) {
@@ -62,11 +64,12 @@ public class SensorService {
         // If no start/end date is specified, then just return sensor data for the past thirty days for all sensor ID's in list.
         if (sensorRequest.getStartDate() == null && sensorRequest.getEndDate() == null) {
             String lastThirtyDays = formatter.format(LocalDateTime.now().minusDays(30));
-            return getAverages(sensorRequest.getMetrics(), sensorRequest.getSensorIdList(), lastThirtyDays, formatter.format(LocalDateTime.now()));
+            return getAverages(sensorRequest.getMetrics(), sensorRequest.getSensorIdList(), lastThirtyDays, formatter.format(LocalDateTime.now())).subscribeOn(Schedulers.boundedElastic());
         } else { // startdate and enddate are defined.
             return getAverages(sensorRequest.getMetrics(), sensorRequest.getSensorIdList(),
                     formatter.format(sensorRequest.getStartDate()),
-                    formatter.format(sensorRequest.getEndDate()));
+                    formatter.format(sensorRequest.getEndDate()))
+                    .subscribeOn(Schedulers.boundedElastic());
         }
     }
 
